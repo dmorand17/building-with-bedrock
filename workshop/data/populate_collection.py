@@ -10,6 +10,8 @@ from rich import print
 
 app = typer.Typer()
 
+client = chromadb.PersistentClient(settings=chromadb.config.Settings(allow_reset=True))
+
 
 def get_text_embeddings_collection(collection_name):
     session = boto3.Session()
@@ -17,7 +19,6 @@ def get_text_embeddings_collection(collection_name):
         session=session, model_name="amazon.titan-embed-text-v2:0"
     )
 
-    client = chromadb.PersistentClient()
     index = client.get_or_create_collection(
         collection_name, embedding_function=embedding_function
     )
@@ -51,6 +52,11 @@ def initialize_collection(collection_name, source_json_file):
 
 @app.command()
 def main():
+    delete_collections = typer.confirm("Reset the database?")
+    if delete_collections:
+        print("Resetting...")
+        client.reset()
+
     initialize_collection("services_collection", "services_with_embeddings.json")
     initialize_collection(
         "bedrock_faqs_collection", "bedrock_faqs_with_embeddings.json"
