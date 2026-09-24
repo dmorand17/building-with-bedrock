@@ -19,3 +19,5 @@ venv/
 # Generated data artifacts (regenerable via data/*.py scripts)
 workshop/data/chroma/
 workshop/data/*_with_embeddings.json
+
+bwab_guardrails.ini
